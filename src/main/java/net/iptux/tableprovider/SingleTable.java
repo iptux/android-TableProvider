@@ -40,7 +40,7 @@ import java.util.Map;
 /**
  * Single table driven {@link android.content.ContentProvider}.
  */
-public abstract class SingleTableProvider implements BaseColumns {
+public abstract class SingleTable implements BaseColumns {
 	public final String mAuthority;
 	public final String mTableName;
 
@@ -53,7 +53,7 @@ public abstract class SingleTableProvider implements BaseColumns {
 	private final int COLUMN_ID = 2;
 	private final int COLUMN_SINGLE = 3;
 
-	protected SingleTableProvider(@NonNull String authority, @NonNull String tableName) {
+	protected SingleTable(@NonNull String authority, @NonNull String tableName) {
 		mAuthority = authority;
 		mTableName = tableName;
 		mContentUri = Uri.parse("content://" + authority + "/" + tableName + "/");

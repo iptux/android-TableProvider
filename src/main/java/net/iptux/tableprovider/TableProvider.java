@@ -56,7 +56,7 @@ import java.util.List;
  * }</pre>
  */
 public abstract class TableProvider extends ContentProvider implements TableProviderDatabaseHelper.Callback {
-	HashMap<String, SingleTableProvider> mTableMap;
+	HashMap<String, SingleTable> mTableMap;
 	protected SQLiteOpenHelper mDatabaseHelper = null;
 
 	protected TableProvider() {
@@ -65,24 +65,25 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	}
 
 	/**
-	 * add a {@link SingleTableProvider} to the {@link ContentProvider}
+	 * add a {@link SingleTable} to the {@link ContentProvider}
 	 *
 	 * should be called in constructor.
-	 * @param tableProvider the {@link SingleTableProvider} to add
+	 * @param tableProvider the {@link SingleTable} to add
 	 */
-	public final void addSingleTableProvider(@NonNull SingleTableProvider tableProvider) {
+	public final void addSingleTableProvider(@NonNull SingleTable tableProvider) {
 		mTableMap.put(tableProvider.getTableName(), tableProvider);
 	}
 
 	/**
-	 * find the {@link SingleTableProvider} related to the {@link Uri}
+	 * find the {@link SingleTable} related to the {@link Uri}
 	 * @param uri the URI to query.
-	 * @return the {@link SingleTableProvider} found
+	 * @return the {@link SingleTable} found
 	 * @throws IllegalArgumentException if not found
 	 */
-	final @NonNull SingleTableProvider findSingleTableProvider(Uri uri) throws IllegalArgumentException {
+	final @NonNull
+	SingleTable findSingleTableProvider(Uri uri) throws IllegalArgumentException {
 		String tableName = extractTableName(uri);
-		SingleTableProvider table = mTableMap.get(tableName);
+		SingleTable table = mTableMap.get(tableName);
 		if (null == table) {
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
@@ -106,7 +107,7 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 * see {@link TableProviderDatabaseHelper.Callback#onDatabaseCreate(SQLiteDatabase)}
 	 */
 	public void onDatabaseCreate(SQLiteDatabase db) {
-		for (SingleTableProvider table: mTableMap.values()) {
+		for (SingleTable table: mTableMap.values()) {
 			table.onCreateDatabase(db);
 		}
 	}
@@ -115,7 +116,7 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 * see {@link TableProviderDatabaseHelper.Callback#onDatabaseUpgrade(SQLiteDatabase, int, int)}
 	 */
 	public void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		for (SingleTableProvider table: mTableMap.values()) {
+		for (SingleTable table: mTableMap.values()) {
 			table.onUpgradeDatabase(db, oldVersion, newVersion);
 		}
 	}
@@ -124,7 +125,7 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 * see {@link android.content.ContentProvider#getType(Uri)}
 	 */
 	public String getType(Uri uri) {
-		SingleTableProvider table = findSingleTableProvider(uri);
+		SingleTable table = findSingleTableProvider(uri);
 		return table.getType(uri);
 	}
 
@@ -132,7 +133,7 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 * see {@link android.content.ContentProvider#query(Uri, String[], String, String[], String)}
 	 */
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-		SingleTableProvider table = findSingleTableProvider(uri);
+		SingleTable table = findSingleTableProvider(uri);
 		Cursor cursor = table.query(mDatabaseHelper, uri, projection, selection, selectionArgs, sortOrder);
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
@@ -142,7 +143,7 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 * see {@link android.content.ContentProvider#insert(Uri, ContentValues)}
 	 */
 	public Uri insert(Uri uri, ContentValues values) {
-		SingleTableProvider table = findSingleTableProvider(uri);
+		SingleTable table = findSingleTableProvider(uri);
 		Uri newUri = table.insert(mDatabaseHelper, uri, values);
 		getContext().getContentResolver().notifyChange(newUri, null);
 		return newUri;
@@ -152,7 +153,7 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 * see {@link android.content.ContentProvider#delete(Uri, String, String[])}
 	 */
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		SingleTableProvider table = findSingleTableProvider(uri);
+		SingleTable table = findSingleTableProvider(uri);
 		int count = table.delete(mDatabaseHelper, uri, selection, selectionArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 		return count;
@@ -162,7 +163,7 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 * see {@link android.content.ContentProvider#update(Uri, ContentValues, String, String[])}
 	 */
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		SingleTableProvider table = findSingleTableProvider(uri);
+		SingleTable table = findSingleTableProvider(uri);
 		int count = table.update(mDatabaseHelper, uri, values, selection, selectionArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 		return count;
