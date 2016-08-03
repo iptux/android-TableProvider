@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +70,7 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 * should be called in constructor.
 	 * @param tableProvider the {@link SingleTableProvider} to add
 	 */
-	public final void addSingleTableProvider(SingleTableProvider tableProvider) {
+	public final void addSingleTableProvider(@NonNull SingleTableProvider tableProvider) {
 		mTableMap.put(tableProvider.getTableName(), tableProvider);
 	}
 
@@ -79,7 +80,7 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 * @return the {@link SingleTableProvider} found
 	 * @throws IllegalArgumentException if not found
 	 */
-	final SingleTableProvider findSingleTableProvider(Uri uri) throws IllegalArgumentException {
+	final @NonNull SingleTableProvider findSingleTableProvider(Uri uri) throws IllegalArgumentException {
 		String tableName = extractTableName(uri);
 		SingleTableProvider table = mTableMap.get(tableName);
 		if (null == table) {

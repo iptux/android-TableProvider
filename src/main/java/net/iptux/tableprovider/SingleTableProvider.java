@@ -29,6 +29,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.HashMap;
@@ -51,7 +53,7 @@ public abstract class SingleTableProvider implements BaseColumns {
 	private final int COLUMN_ID = 2;
 	private final int COLUMN_SINGLE = 3;
 
-	protected SingleTableProvider(String authority, String tableName) {
+	protected SingleTableProvider(@NonNull String authority, @NonNull String tableName) {
 		mAuthority = authority;
 		mTableName = tableName;
 		mContentUri = Uri.parse("content://" + authority + "/" + tableName + "/");
@@ -69,7 +71,7 @@ public abstract class SingleTableProvider implements BaseColumns {
 	 * get table name in use.
 	 * @return the table name
 	 */
-	public final String getTableName() {
+	public final @NonNull String getTableName() {
 		return mTableName;
 	}
 
@@ -77,7 +79,7 @@ public abstract class SingleTableProvider implements BaseColumns {
 	 * get base content uri of this provider.
 	 * @return the content uri
 	 */
-	public final Uri getContentUri() {
+	public final @NonNull Uri getContentUri() {
 		return mContentUri;
 	}
 
@@ -113,7 +115,7 @@ public abstract class SingleTableProvider implements BaseColumns {
 	 * @return {@link true} if {@link values} is valid, {@link false} if invalid.
 	 * @throws IllegalArgumentException {@link throw} if {@link values} is invalid.
 	 */
-	public abstract boolean checkInsertContentValues(ContentValues values) throws IllegalArgumentException;
+	public abstract boolean checkInsertContentValues(@NonNull ContentValues values) throws IllegalArgumentException;
 
 	/**
 	 * see {@link android.content.ContentProvider#getType(Uri)}
