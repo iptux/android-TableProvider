@@ -76,11 +76,16 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	/**
 	 * find the {@link SingleTableProvider} related to the {@link Uri}
 	 * @param uri the URI to query.
-	 * @return the found {@link SingleTableProvider} or {@link null} if not found.
+	 * @return the {@link SingleTableProvider} found
+	 * @throws IllegalArgumentException if not found
 	 */
-	final SingleTableProvider findSingleTableProvider(Uri uri) {
+	final SingleTableProvider findSingleTableProvider(Uri uri) throws IllegalArgumentException {
 		String tableName = extractTableName(uri);
-		return mTableMap.get(tableName);
+		SingleTableProvider table = mTableMap.get(tableName);
+		if (null == table) {
+			throw new IllegalArgumentException("Unknown URI: " + uri);
+		}
+		return table;
 	}
 
 	/**
@@ -119,9 +124,6 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 */
 	public String getType(Uri uri) {
 		SingleTableProvider table = findSingleTableProvider(uri);
-		if (null == table) {
-			return null;
-		}
 		return table.getType(uri);
 	}
 
@@ -130,9 +132,6 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 */
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 		SingleTableProvider table = findSingleTableProvider(uri);
-		if (null == table) {
-			return null;
-		}
 		Cursor cursor = table.query(mDatabaseHelper, uri, projection, selection, selectionArgs, sortOrder);
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
@@ -143,9 +142,6 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 */
 	public Uri insert(Uri uri, ContentValues values) {
 		SingleTableProvider table = findSingleTableProvider(uri);
-		if (null == table) {
-			return null;
-		}
 		Uri newUri = table.insert(mDatabaseHelper, uri, values);
 		getContext().getContentResolver().notifyChange(newUri, null);
 		return newUri;
@@ -156,9 +152,6 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 */
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		SingleTableProvider table = findSingleTableProvider(uri);
-		if (null == table) {
-			throw new IllegalArgumentException("Unknown URI: " + uri);
-		}
 		int count = table.delete(mDatabaseHelper, uri, selection, selectionArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 		return count;
@@ -169,9 +162,6 @@ public abstract class TableProvider extends ContentProvider implements TableProv
 	 */
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 		SingleTableProvider table = findSingleTableProvider(uri);
-		if (null == table) {
-			throw new IllegalArgumentException("Unknown URI: " + uri);
-		}
 		int count = table.update(mDatabaseHelper, uri, values, selection, selectionArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 		return count;
